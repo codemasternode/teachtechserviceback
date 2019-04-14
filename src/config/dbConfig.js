@@ -17,6 +17,8 @@ let sequelize = new Sequelize(
       //przez ile milisekund połączenia ma być bezczynne zanim zostanie użyte
       idle: 5000
     }
+    //wyłącza logi
+    //logging: false
   }
 );
 

@@ -3,6 +3,7 @@ import {
   doNotContainSpecialCharacters,
   appropariateLength
 } from "./validations";
+import models from "../config/dbConfig";
 
 const user = (sequelize, DataTypes) => {
   const User = sequelize.define(
@@ -66,6 +67,10 @@ const user = (sequelize, DataTypes) => {
     }
   );
 
+  User.prototype.checkPassword = async function(candidatePassword) {
+    return bcrypt.compare(candidatePassword, this.password);
+  };
+
   User.prototype.hashPassword = function hashPassword() {
     let hashed = bcrypt.hashSync(this.password, bcrypt.genSaltSync(8));
     this.password = hashed;
@@ -77,16 +82,35 @@ const user = (sequelize, DataTypes) => {
       .replace(/ /g, "");
   };
 
-  User.findByLogin = async login => {
+  User.authenticateUser = async ({ email, password }) => {
     let user = await User.findOne({
-      where: { username: login }
+      where: {
+        email
+      }
     });
-
     if (!user) {
-      user = await User.findOne({
-        where: { email: login }
-      });
+      throw {
+        error: "NOT EXISTING USER",
+        payload: {
+          email
+        }
+      };
     }
+
+    if (await user.checkPassword(password)) {
+      return user;
+    } else {
+      throw {
+        error: "NOT VALID PASSWORD",
+        payload: null
+      };
+    }
+  };
+
+  User.findByEmail = async email => {
+    let user = await User.findOne({
+      where: { email }
+    });
 
     return user;
   };

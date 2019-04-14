@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import "dotenv/config";
 import cors from "cors";
 import models, { sequelize } from "./config/dbConfig";
+import redis from "./config/redisConfig";
 import indexRoutes from "./routes";
 import color from "colors";
 
@@ -25,7 +26,7 @@ sequelize
   .sync({ force: true })
   .then(() => {
     console.log(
-      "[POSTGRESQL] Connection has been successful established".green
+      "[POSTGRESQL] Connection has been successful established".yellow
     );
   })
   .catch(err => {
