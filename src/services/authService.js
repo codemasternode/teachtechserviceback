@@ -1,5 +1,9 @@
 import models from "../config/dbConfig";
-import { addToRedis, checkIsNotExpire } from "../config/redisConfig";
+import {
+  addToRedis,
+  checkIsNotExpire,
+  removeFromRedis
+} from "../config/redisConfig";
 import Sequelize from "sequelize";
 import { sign } from "jsonwebtoken";
 import uniqueId from "uniqid";
@@ -90,6 +94,19 @@ export function checkToken(token) {
         reject(err);
       }
       resolve(time);
+    });
+  });
+}
+
+export function logout(token) {
+  return new Promise((resolve, reject) => {
+    removeFromRedis(token, (err, reply) => {
+      console.log("asd")
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
     });
   });
 }

@@ -45,4 +45,14 @@ export const checkIsNotExpire = (key, callback) => {
   });
 };
 
+export function removeFromRedis(key, callback) {
+  client.del(key, (err, response) => {
+    if (response == 1) {
+      callback(undefined, {});
+    } else {
+      callback({ error: "Can not delete" });
+    }
+  });
+}
+
 export default client;

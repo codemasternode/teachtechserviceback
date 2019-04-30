@@ -2,7 +2,8 @@ import {
   createUser,
   loginUser,
   checkEmail,
-  checkToken
+  checkToken,
+  logout
 } from "../services/authService";
 import Sequelize from "sequelize";
 import color from "colors";
@@ -27,6 +28,21 @@ export default router => {
         }
       });
   });
+
+  router.post("/logout", (req, res) => {
+    if (!req.body.token) {
+      return res.status(400).send();
+    }
+
+    logout(req.body.token)
+      .then(() => {
+        res.send();
+      })
+      .catch(err => {
+        res.status(404).send(err);
+      });
+  });
+
   router.post("/register", (req, res) => {
     createUser(req.body.user)
       .then(user => {
@@ -64,7 +80,7 @@ export default router => {
         res.send({ time });
       })
       .catch(err => {
-        console.log(err)
+        console.log(err);
         if (err.error == "NOT EXIST") {
           res.status(404).send();
         } else if (err.error == "NOT EXPIPRE") {
