@@ -1,5 +1,5 @@
 import models from "../config/dbConfig";
-import { addToRedis, getFromRedis } from "../config/redisConfig";
+import { addToRedis, checkIsNotExpire } from "../config/redisConfig";
 import Sequelize from "sequelize";
 import { sign } from "jsonwebtoken";
 import uniqueId from "uniqid";
@@ -54,12 +54,42 @@ export function loginUser(candidateOnUser) {
 
     Promise.all([authenticateUser, prepareJWT])
       .then(odps => {
-        let unique = uniqueId("jwt-");
+        let unique = uniqueId("token-");
         addToRedis(unique, odps[1]);
         resolve({ token: unique });
       })
       .catch(errors => {
         reject(errors);
       });
+  });
+}
+
+export function checkEmail(email) {
+  return new Promise((resolve, reject) => {
+    models.Users.findAll({
+      where: {
+        email
+      }
+    })
+      .then(users => {
+        if (users.length > 0) {
+          resolve(true);
+        }
+        resolve(false);
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+}
+
+export function checkToken(token) {
+  return new Promise((resolve, reject) => {
+    checkIsNotExpire(token, (err, time) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(time);
+    });
   });
 }

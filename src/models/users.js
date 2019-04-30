@@ -3,7 +3,6 @@ import {
   doNotContainSpecialCharacters,
   appropariateLength
 } from "./validations";
-import models from "../config/dbConfig";
 
 const user = (sequelize, DataTypes) => {
   const User = sequelize.define(
@@ -15,7 +14,7 @@ const user = (sequelize, DataTypes) => {
         validate: {
           doNotContainSpecialCharacters: value =>
             doNotContainSpecialCharacters(value),
-          appropariateLength: value => appropariateLength(value, undefined, 20)
+          appropariateLength: value => appropariateLength(value, undefined, 30)
         }
       },
       last_name: {

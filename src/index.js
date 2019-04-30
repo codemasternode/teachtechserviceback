@@ -6,6 +6,7 @@ import models, { sequelize } from "./config/dbConfig";
 import redis from "./config/redisConfig";
 import indexRoutes from "./routes";
 import color from "colors";
+import { sendEmailVerification } from "./services/mailer";
 
 // process.on("uncaughtException", err => {});
 
@@ -23,7 +24,7 @@ if (!PORT || !POSTGRES_DATABASE || !POSTGRES_USERNAME || !POSTGRES_PASSWORD) {
 }
 
 sequelize
-  .sync({ force: true })
+  .sync()
   .then(() => {
     console.log(
       "[POSTGRESQL] Connection has been successful established".yellow

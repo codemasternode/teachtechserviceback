@@ -6,16 +6,16 @@ const client = redis.createClient(
   process.env.REDIS_HOST
 );
 
-client.on("error", function(err) {
-  throw new Error(`Problem with Redis connection`.red);
-});
-
 client.on("connect", function() {
   console.log("[REDIS] Connection has been established".yellow);
 });
 
+client.on("error", function(err) {
+  throw new Error(`Problem with Redis connection`.red);
+});
+
 export const addToRedis = (key, value) => {
-  client.set(key, value);
+  client.set(key, value, "EX", 86400, redis.print);
 };
 
 export const getFromRedis = (key, callback) => {
@@ -24,6 +24,24 @@ export const getFromRedis = (key, callback) => {
       return callback(err);
     }
     callback(reply);
+  });
+};
+
+export const checkIsNotExpire = (key, callback) => {
+  client.get(key, (err, reply) => {
+    console.log(reply);
+    if (err || !reply) {
+      callback({ error: "NOT EXIST" });
+    } else {
+      client.ttl(key, (err, time) => {
+        console.log(time);
+        if (err) {
+          callback({ error: "NOT EXPIRE" });
+        } else {
+          callback(undefined, time);
+        }
+      });
+    }
   });
 };
 

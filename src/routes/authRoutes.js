@@ -1,9 +1,17 @@
-import { createUser, loginUser } from "../services/authService";
+import {
+  createUser,
+  loginUser,
+  checkEmail,
+  checkToken
+} from "../services/authService";
 import Sequelize from "sequelize";
 import color from "colors";
 
 export default router => {
-  router.get("/login", (req, res) => {
+  router.post("/login", (req, res) => {
+    if (!req.body.user.email || !req.body.user.password) {
+      return res.status(400).send();
+    }
     loginUser(req.body.user)
       .then(token => {
         res.send(token);
@@ -36,5 +44,36 @@ export default router => {
         }
       });
   });
+  router.post("/checkemail", (req, res) => {
+    let { email } = req.body;
+    checkEmail(email)
+      .then(isOccupied => {
+        res.send({ isOccupied });
+      })
+      .catch(err => {
+        res.status(500).send();
+      });
+  });
+
+  router.post("/checkauth", (req, res) => {
+    if (!req.body.token) {
+      return res.status(400);
+    }
+    checkToken(req.body.token)
+      .then(time => {
+        res.send({ time });
+      })
+      .catch(err => {
+        console.log(err)
+        if (err.error == "NOT EXIST") {
+          res.status(404).send();
+        } else if (err.error == "NOT EXPIPRE") {
+          res.status(500).send();
+        } else {
+          res.status(500).send();
+        }
+      });
+  });
+
   return router;
 };
