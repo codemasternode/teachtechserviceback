@@ -1,0 +1,21 @@
+html
+  head
+    title= "Potwierdzenie emaila"
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css")
+    link(href="https://fonts.googleapis.com/icon?family=Material+Icons",rel="stylesheet")
+    link(rel="stylesheet", href="/static/confirmEmail.css")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+  body
+  div
+    .row
+      .col.s12(style='display: flex;justify-content: center;height: 90%;align-items: center;')
+        .card(style="max-width: 600px;max-height: 220px;")
+          .card-content
+            if isSuccess
+              span.card-title #{title}
+            else
+              span.card-title(style='color:red;') #{title}
+          .card-action
+            a(href=pathToRedirect) #{link}
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js")
+    

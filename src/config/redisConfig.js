@@ -14,8 +14,12 @@ client.on("error", function(err) {
   throw new Error(`Problem with Redis connection`.red);
 });
 
-export const addToRedis = (key, value) => {
-  client.set(key, value, "EX", 86400, redis.print);
+export const addToRedis = (key, value, expire) => {
+  if (expire) {
+    client.set(key, value, "EX", expire, redis.print);
+  } else {
+    client.set(key, value);
+  }
 };
 
 export const getFromRedis = (key, callback) => {
@@ -23,7 +27,7 @@ export const getFromRedis = (key, callback) => {
     if (err) {
       return callback(err);
     }
-    callback(reply);
+    callback(undefined, reply);
   });
 };
 

@@ -3,6 +3,7 @@ import {
   loginUser,
   checkEmail,
   checkToken,
+  confirmEmail,
   logout
 } from "../services/authService";
 import Sequelize from "sequelize";
@@ -22,7 +23,12 @@ export default router => {
           res.status(401).send();
         } else if (err.error === "NOT EXISTING USER") {
           res.status(401).send(err);
+        } else if (err.error == "NOT ENABLE USER") {
+          res.status(409).send();
+        } else if (err.error === "USER SUSPENDED") {
+          res.status(409).send();
         } else if (err.error === "UNCAUGHT ERROR") {
+          res.status(500).send();
         } else {
           res.status(500).send();
         }
@@ -88,6 +94,32 @@ export default router => {
         } else {
           res.status(500).send();
         }
+      });
+  });
+
+  router.get("/confirm/email/:token", (req, res) => {
+    let { token } = req.params;
+    if (!token) {
+      return res.render("confirmemail", {
+        title: "Brak tokenu - poinformuj administratora"
+      });
+    }
+    confirmEmail(token)
+      .then(() => {
+        res.render("confirmemail", {
+          title: "Udało się !!! Potwierdziliśmy twój adres email",
+          pathToRedirect: `http://localhost:3001/login`,
+          isSuccess: true,
+          link: "Zaloguj się"
+        });
+      })
+      .catch(err => {
+        res.render("confirmemail", {
+          title: "Twoje potwierdzenie wygasło, zarejestruj jeszcze raz konto",
+          pathToRedirect: `http://localhost:3001/register`,
+          isSuccess: false,
+          link: "Zarejestruj się"
+        });
       });
   });
 

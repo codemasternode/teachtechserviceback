@@ -12,18 +12,18 @@ const user = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          doNotContainSpecialCharacters: value =>
-            doNotContainSpecialCharacters(value),
-          appropariateLength: value => appropariateLength(value, undefined, 30)
+          // doNotContainSpecialCharacters: value =>
+          //   doNotContainSpecialCharacters(value),
+          // appropariateLength: value => appropariateLength(value, undefined, 30)
         }
       },
       last_name: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          doNotContainSpecialCharacters: value =>
-            doNotContainSpecialCharacters(value),
-          appropariateLength: value => appropariateLength(value, undefined, 40)
+          // doNotContainSpecialCharacters: value =>
+          //   doNotContainSpecialCharacters(value),
+          // appropariateLength: value => appropariateLength(value, undefined, 40)
         }
       },
       email: {
@@ -32,8 +32,8 @@ const user = (sequelize, DataTypes) => {
         unique: true,
         required: true,
         validate: {
-          isEmail: true,
-          appropariateLength: value => appropariateLength(value, undefined, 30)
+          isEmail: true
+          // appropariateLength: value => appropariateLength(value, undefined, 30)
         }
       },
       password: {
@@ -48,7 +48,12 @@ const user = (sequelize, DataTypes) => {
       isEnable: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: false
+      },
+      isSuspended: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
       },
       username: {
         type: DataTypes.STRING,
@@ -81,6 +86,20 @@ const user = (sequelize, DataTypes) => {
       .replace(/ /g, "");
   };
 
+  User.changeEnable = ({ email = "" }) => {
+    return User.update({ isEnable: true }, { where: { email } }).then(
+      rowsUpdated => {
+        console.log(rowsUpdated);
+        if (rowsUpdated.length == 0) {
+          throw {
+            err: "SERVER ERROR"
+          };
+        }
+        return {};
+      }
+    );
+  };
+
   User.authenticateUser = async ({ email, password }) => {
     let user = await User.findOne({
       where: {
@@ -93,6 +112,18 @@ const user = (sequelize, DataTypes) => {
         payload: {
           email
         }
+      };
+    }
+
+    if (!user.isEnable) {
+      throw {
+        error: "NOT ENABLE USER"
+      };
+    }
+
+    if (user.isSuspended) {
+      throw {
+        error: "USER SUSPENDED"
       };
     }
 

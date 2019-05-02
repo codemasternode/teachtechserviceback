@@ -21,13 +21,17 @@
     "cors": "^2.8.5",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
+    "google-auth-library": "^3.1.2",
+    "googleapis": "^27.0.0",
     "jsonwebtoken": "^8.5.1",
     "nodemailer": "^6.1.1",
     "pg": "^7.9.0",
     "pg-hstore": "^2.3.2",
+    "pug": "^2.0.3",
     "redis": "^2.8.0",
     "sequelize": "^5.3.5",
-    "uniqid": "^5.0.3"
+    "uniqid": "^5.0.3",
+    "xoauth2": "^1.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.3",
