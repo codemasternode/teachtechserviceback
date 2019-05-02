@@ -16,12 +16,29 @@ export function createUser(newUser) {
       .then(user => {
         let confirmation = uniqueId("confirmation-");
         addToRedis(confirmation, newUser.email, 86400);
-        sendConfirmationEmail({
-          email: newUser.email,
-          first_name: newUser.first_name,
-          last_name: newUser.last_name,
-          url: `${process.env.DOMAIN}/auth/confirm/email/${confirmation}`
-        });
+        process.nextTick(() => {
+          sendConfirmationEmail({
+            email: newUser.email,
+            first_name: newUser.first_name,
+            last_name: newUser.last_name,
+            url: `${process.env.DOMAIN}/auth/confirm/email/${confirmation}`
+          });
+        })
+        setTimeout(() => {
+          models.Users.findOne({
+            where: {
+              email: newUser.email
+            }
+          }).then((users) => {
+            if(users.length > 0) {
+              models.Users.destroy({
+                where: {
+                  email: newUser.email
+                }
+              })
+            }
+          })
+        },86400)
         resolve(user);
       })
       .catch(Sequelize.UniqueConstraintError, err => {
