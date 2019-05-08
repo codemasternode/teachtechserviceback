@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
-import {
-  doNotContainSpecialCharacters,
-  appropariateLength
-} from "./validations";
+// import {
+//   doNotContainSpecialCharacters,
+//   appropariateLength
+// } from "./validations";
 
 const user = (sequelize, DataTypes) => {
   const User = sequelize.define(
@@ -143,6 +143,12 @@ const user = (sequelize, DataTypes) => {
     });
 
     return user;
+  };
+
+  User.associate = models => {
+    User.hasMany(models.Comment, { as: "Comments" });
+    User.belongsToMany(models.Course, { through: "usercourse" });
+    User.belongsToMany(models.Video, { through: "uservideo" });
   };
 
   return User;

@@ -22,7 +22,12 @@ let sequelize = new Sequelize(
 );
 
 const models = {
-  Users: sequelize.import(path.join(__dirname, "../models/users.js"))
+  User: sequelize.import(path.join(__dirname, "../models/users.js")),
+  Category: sequelize.import(path.join(__dirname, "../models/categories.js")),
+  Comment: sequelize.import(path.join(__dirname, "../models/comments.js")),
+  Course: sequelize.import(path.join(__dirname, "../models/courses.js")),
+  SeoUnit: sequelize.import(path.join(__dirname, "../models/seoUnits.js")),
+  Video: sequelize.import(path.join(__dirname, "../models/videos.js"))
 };
 
 Object.keys(models).forEach(function(key) {

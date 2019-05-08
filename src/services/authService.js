@@ -12,7 +12,7 @@ import { sendConfirmationEmail } from "./mailer";
 
 export function createUser(newUser) {
   return new Promise((resolve, reject) => {
-    models.Users.create(newUser)
+    models.User.create(newUser)
       .then(user => {
         let confirmation = uniqueId("confirmation-");
         addToRedis(confirmation, newUser.email, 86400);
@@ -25,7 +25,7 @@ export function createUser(newUser) {
           });
         })
         setTimeout(() => {
-          models.Users.findOne({
+          models.User.findOne({
             where: {
               email: newUser.email
             }
@@ -71,7 +71,7 @@ export function createUser(newUser) {
 export function loginUser(candidateOnUser) {
   return new Promise((resolve, reject) => {
     let { email, password } = candidateOnUser;
-    let authenticateUser = models.Users.authenticateUser({ email, password });
+    let authenticateUser = models.User.authenticateUser({ email, password });
     let prepareJWT = new Promise((resolve, reject) => {
       sign({ email }, process.env.JWT_PRIVATE_KEY, (err, token) => {
         if (err) {
@@ -105,7 +105,7 @@ export function loginUser(candidateOnUser) {
 
 export function checkEmail(email) {
   return new Promise((resolve, reject) => {
-    models.Users.findAll({
+    models.User.findAll({
       where: {
         email
       }
@@ -156,7 +156,7 @@ export function confirmEmail(token) {
       if (!reply) {
         reject();
       } else {
-        models.Users.changeEnable({email: reply})
+        models.User.changeEnable({email: reply})
           .then(() => {
             resolve();
           })
